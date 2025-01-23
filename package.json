@@ -1,0 +1,14 @@
+{
+  "name": "devtinderbackend",
+  "version": "1.0.0",
+  "description": "this is the devtinerbackend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "jagan Natarajan",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
