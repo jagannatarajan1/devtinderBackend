@@ -1,5 +1,5 @@
 const userAuth = (req, res, next) => {
-  const authtoken = "xydz";
+  const authtoken = "xyz";
   if (authtoken === "xyz") {
     next();
   } else {

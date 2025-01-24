@@ -13,17 +13,24 @@ app.use("/test/1", (req, res) => {
 
 app.use("/user", userAuth, (req, res, next) => {
   console.log("User route middleware");
+  throw new Error("something went wrong");
   next();
 });
 app.get("/user", userAuth, (req, res, next) => {
-  res.send("User route");
+  try {
+    console.log(req.user);
+    res.send("User route");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
 });
 // /test route
 
-app.use("/test", (req, res) => {
-  res.send(
-    "Test test test test test test test test test test test test test test"
-  );
+app.use("/", (err, req, res, next) => {
+  if (err) {
+    res.status(401).send("something went wrong");
+  }
 });
 
 // Start the server
