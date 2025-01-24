@@ -1,14 +1,26 @@
 const express = require("express");
+const { userAuth } = require("./middlewares/auth");
 
 const app = express();
 
 // Root route
-app.get("/", (req, res) => {
-  res.send("Hey man, this is the first server hjhkhkjshjkh");
+
+app.use("/test/1", (req, res) => {
+  res.send(
+    "Test test test test test1111111111111111 test test test test test test"
+  );
 });
 
+app.use("/user", userAuth, (req, res, next) => {
+  console.log("User route middleware");
+  next();
+});
+app.get("/user", userAuth, (req, res, next) => {
+  res.send("User route");
+});
 // /test route
-app.get("/test", (req, res) => {
+
+app.use("/test", (req, res) => {
   res.send(
     "Test test test test test test test test test test test test test test"
   );
