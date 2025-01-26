@@ -1,5 +1,6 @@
-const mongoose = require("mongoose");
 const validator = require("validator");
+const mongoose = require("mongoose");
+
 const userModel = new mongoose.Schema(
   {
     firstName: {
@@ -47,13 +48,13 @@ const userModel = new mongoose.Schema(
     },
     age: {
       type: Number,
-      required: true,
+      // required: true,
       min: 18,
       max: 99,
     },
     profilePic: {
       type: String,
-      required: true,
+      // required: true,
       default: "https://via.placeholder.com/150",
       validate: {
         validator(value) {
@@ -65,7 +66,7 @@ const userModel = new mongoose.Schema(
     },
     skills: {
       type: [String],
-      required: true,
+      // required: true,
       minlength: 2,
       maxlength: 10,
     },

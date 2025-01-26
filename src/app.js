@@ -1,20 +1,27 @@
 const express = require("express");
 const connectdb = require("./config/database");
 const User = require("./models/user");
+const bcrypt = require("bcrypt");
+const validatorFunction = require("./utils/validation");
 
 const app = express();
 app.use(express.json());
 app.post("/signup", async (req, res) => {
-  console.log(req.body);
-  const user = new User(
-    // firstName: "revi",
-    // lastName: "kumar",
-    // emailId: "raj@gmailddd.com",
-    // password: "1234dfdfdf56",
-    // age: 45,
-    req.body
-  );
   try {
+    validatorFunction(req);
+    console.log(req.body);
+
+    const { firstName, lastName, emailId, password } = req.body;
+    const passwordHash = await bcrypt.hash(password, 1);
+    const sendObj = {
+      firstName,
+      lastName,
+      emailId,
+      password: passwordHash,
+      // skills: [],
+      // profilePic: "",
+    };
+    const user = new User(sendObj);
     await user.save();
     console.log("User saved");
     res.send(user);
