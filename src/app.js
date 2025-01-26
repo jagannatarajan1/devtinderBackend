@@ -26,6 +26,7 @@ app.post("/signup", async (req, res) => {
 
 app.patch("/user/:userId", async (req, res) => {
   const userId = req.params?.userId;
+  const data = req.body;
   try {
     const allowedData = [
       "firstName",
@@ -35,12 +36,10 @@ app.patch("/user/:userId", async (req, res) => {
       "profilePic",
     ];
     console.log(req.body);
-    const isAllowed = Object.keys(req.body).every((k) =>
-      allowedData.includes(k)
-    );
+    const isAllowed = Object.keys(data).every((k) => allowedData.includes(k));
     console.log(isAllowed);
     if (isAllowed) {
-      if (req.body.skills && req.body.skills.length > 10) {
+      if (data.skills && data.skills.length > 10) {
         throw new Error("Skills should contain more than 10 items");
       }
       const userIdFromReq = userId;

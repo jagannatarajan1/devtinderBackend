@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 const userModel = new mongoose.Schema(
   {
     firstName: {
@@ -23,9 +24,10 @@ const userModel = new mongoose.Schema(
       trim: true,
       validate: {
         validator(value) {
-          return /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(value);
+          if (!validator.isEmail(value)) {
+            throw new Error("Please enter a valid email address");
+          }
         },
-        message: "Please enter a valid email address.",
       },
     },
     password: {
@@ -33,6 +35,15 @@ const userModel = new mongoose.Schema(
       required: true,
       minlength: 8,
       trim: true,
+      validate: {
+        validator(value) {
+          if (!validator.isStrongPassword(value)) {
+            throw new Error(
+              "Password must be at least 8 characters long, contain a number, a lowercase letter, an uppercase letter, and a special character"
+            );
+          }
+        },
+      },
     },
     age: {
       type: Number,
@@ -40,7 +51,18 @@ const userModel = new mongoose.Schema(
       min: 18,
       max: 99,
     },
-    profilePic: {},
+    profilePic: {
+      type: String,
+      required: true,
+      default: "https://via.placeholder.com/150",
+      validate: {
+        validator(value) {
+          if (!validator.isURL(value)) {
+            throw new Error("Please enter a valid URL for profilePic");
+          }
+        },
+      },
+    },
     skills: {
       type: [String],
       required: true,
