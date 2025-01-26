@@ -20,23 +20,44 @@ app.post("/signup", async (req, res) => {
     res.send(user);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server Error");
+    res.status(500).send("Server Error" + error.message);
   }
 });
 
-app.patch("/user", async (req, res) => {
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params?.userId;
   try {
-    const userIdFromReq = req.body.userId;
-    const updatedDataFromReq = req.body;
-    const updatedUser = await User.findByIdAndUpdate(
-      userIdFromReq,
-      updatedDataFromReq
+    const allowedData = [
+      "firstName",
+      "lastName",
+      "password",
+      "skills",
+      "profilePic",
+    ];
+    console.log(req.body);
+    const isAllowed = Object.keys(req.body).every((k) =>
+      allowedData.includes(k)
     );
-    console.log("User updated");
-    res.send(updatedUser);
+    console.log(isAllowed);
+    if (isAllowed) {
+      if (req.body.skills && req.body.skills.length > 10) {
+        throw new Error("Skills should contain more than 10 items");
+      }
+      const userIdFromReq = userId;
+      const updatedDataFromReq = req.body;
+      const updatedUser = await User.findByIdAndUpdate(
+        userIdFromReq,
+        updatedDataFromReq,
+        { runValidators: true }
+      );
+      console.log("User updated");
+      res.send(updatedUser);
+    } else {
+      throw new Error();
+    }
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server Error");
+    res.status(500).send("Server Error" + error.message);
   }
 });
 
