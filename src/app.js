@@ -24,8 +24,31 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.get("/", (req, res) => {
-  res.send("API is running");
+app.patch("/user", async (req, res) => {
+  try {
+    const userIdFromReq = req.body.userId;
+    const updatedDataFromReq = req.body;
+    const updatedUser = await User.findByIdAndUpdate(
+      userIdFromReq,
+      updatedDataFromReq
+    );
+    console.log("User updated");
+    res.send(updatedUser);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server Error");
+  }
+});
+
+app.get("/user", async (req, res) => {
+  try {
+    const users = await User.find({ emailId: req.body.email });
+    console.log(users);
+    res.send(users);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server Error");
+  }
 });
 const connectionFunction = async () => {
   try {
