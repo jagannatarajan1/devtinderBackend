@@ -50,6 +50,17 @@ app.get("/user", async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+app.delete("/user", async (req, res) => {
+  try {
+    const userIdFromReq = req.body.userId;
+    const deletedUser = await User.deleteOne({ _id: userIdFromReq });
+    console.log("User deleted");
+    res.send("deleted Successfully" + deletedUser);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server Error");
+  }
+});
 const connectionFunction = async () => {
   try {
     await connectdb();
