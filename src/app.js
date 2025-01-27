@@ -3,6 +3,7 @@ const connectdb = require("./config/database");
 const User = require("./models/user");
 const bcrypt = require("bcrypt");
 const validatorFunction = require("./utils/validation");
+const validator = require("validator");
 
 const app = express();
 app.use(express.json());
@@ -28,6 +29,32 @@ app.post("/signup", async (req, res) => {
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Server Error" + error.message);
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+    console.log(req.body);
+    if (!validator.isEmail(emailId)) {
+      throw new Error("Invalid credentials");
+    }
+    console.log(req.body);
+    const user = await User.findOne({ emailId });
+    console.log(user);
+    if (!user) {
+      throw new Error("Invalid credentials");
+    }
+    console.log(password, user.password);
+    const AuthenticateUser = await bcrypt.compare(password, user.password);
+    if (!AuthenticateUser) {
+      throw new Error("Invalid credentials");
+    } else {
+      res.send("login successfully");
+    }
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send(error.message);
   }
 });
 
