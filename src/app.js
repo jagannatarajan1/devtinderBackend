@@ -4,8 +4,12 @@ const User = require("./models/user");
 const bcrypt = require("bcrypt");
 const validatorFunction = require("./utils/validation");
 const validator = require("validator");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 const app = express();
+
+app.use(cookieParser());
 app.use(express.json());
 app.post("/signup", async (req, res) => {
   try {
@@ -31,25 +35,41 @@ app.post("/signup", async (req, res) => {
     res.status(500).send("Server Error" + error.message);
   }
 });
+app.get("/profile", async (req, res) => {
+  try {
+    const { token } = req.cookies;
+    if (!token) {
+      throw new Error("Unauthorized");
+    }
+    console.log(token);
+    const decoded = jwt.verify(token, "GhostGopal@123");
+    console.log(id);
+    const user = await User.findById(id);
+    console.log(user);
+    res.send(user);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server Error" + error.message);
+  }
+});
 
 app.post("/login", async (req, res) => {
   try {
     const { emailId, password } = req.body;
-    console.log(req.body);
     if (!validator.isEmail(emailId)) {
       throw new Error("Invalid credentials");
     }
-    console.log(req.body);
     const user = await User.findOne({ emailId });
-    console.log(user);
     if (!user) {
       throw new Error("Invalid credentials");
     }
-    console.log(password, user.password);
     const AuthenticateUser = await bcrypt.compare(password, user.password);
     if (!AuthenticateUser) {
       throw new Error("Invalid credentials");
     } else {
+      const token = jwt.sign({ id: user._id }, "GhostGopal@123");
+
+      res.cookie("token", token);
       res.send("login successfully");
     }
   } catch (error) {
