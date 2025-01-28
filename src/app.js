@@ -6,7 +6,7 @@ const validatorFunction = require("./utils/validation");
 const validator = require("validator");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
-
+const { userAuth } = require("./middlewares/auth");
 const app = express();
 
 app.use(cookieParser());
@@ -35,18 +35,10 @@ app.post("/signup", async (req, res) => {
     res.status(500).send("Server Error" + error.message);
   }
 });
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    const { token } = req.cookies;
-    if (!token) {
-      throw new Error("Unauthorized");
-    }
-    console.log(token);
-    const decoded = jwt.verify(token, "GhostGopal@123");
-    console.log(id);
-    const user = await User.findById(id);
-    console.log(user);
-    res.send(user);
+    console.log(req.user);
+    res.send(req.user);
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Server Error" + error.message);
@@ -67,9 +59,14 @@ app.post("/login", async (req, res) => {
     if (!AuthenticateUser) {
       throw new Error("Invalid credentials");
     } else {
-      const token = jwt.sign({ id: user._id }, "GhostGopal@123");
+      const token = jwt.sign({ id: user._id }, "GhostGopal@123", {
+        expiresIn: "1d", // expires in 24 hours
+      });
 
-      res.cookie("token", token);
+      res.cookie("token", token, {
+        expires: new Date(Date.now() + 900000),
+        httpOnly: true,
+      });
       res.send("login successfully");
     }
   } catch (error) {
@@ -78,7 +75,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.patch("/user/:userId", async (req, res) => {
+app.patch("/user/:userId", userAuth, async (req, res) => {
   const userId = req.params?.userId;
   const data = req.body;
   try {
@@ -114,7 +111,7 @@ app.patch("/user/:userId", async (req, res) => {
   }
 });
 
-app.get("/user", async (req, res) => {
+app.get("/user", userAuth, async (req, res) => {
   try {
     const users = await User.find({ emailId: req.body.email });
     console.log(users);
@@ -124,7 +121,7 @@ app.get("/user", async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
-app.delete("/user", async (req, res) => {
+app.delete("/user", userAuth, async (req, res) => {
   try {
     const userIdFromReq = req.body.userId;
     const deletedUser = await User.deleteOne({ _id: userIdFromReq });

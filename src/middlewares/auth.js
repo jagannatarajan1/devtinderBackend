@@ -1,9 +1,26 @@
-const userAuth = (req, res, next) => {
-  const authtoken = "xyz";
-  if (authtoken === "xyz") {
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
+const userAuth = async (req, res, next) => {
+  try {
+    const { token } = req.cookies;
+    if (!token) {
+      throw new Error("No token provided");
+    }
+
+    // Verify the token
+    const decoded = await jwt.verify(token, "GhostGopal@123");
+    if (!decoded) {
+      throw new Error("Invalid token");
+    }
+    const { id } = decoded;
+    const user = await User.findById(id);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    req.user = user;
     next();
-  } else {
-    res.status(401).send("this is unauthorized");
+  } catch (err) {
+    res.status(401).json({ message: err.message });
   }
 };
 
