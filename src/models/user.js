@@ -78,6 +78,7 @@ const userModel = new mongoose.Schema(
 );
 userModel.methods.JwtToken = async function () {
   const user = this;
+  console.log(user);
   const token = jwt.sign({ id: user._id }, "GhostGopal@123", {
     expiresIn: "1d", // expires in 24 hours
   });
