@@ -12,7 +12,7 @@ authRoute.post("/signup", async (req, res) => {
     console.log(req.body);
 
     const { firstName, lastName, emailId, password } = req.body;
-    const passwordHash = await bcrypt.hash(password, 1);
+    const passwordHash = await bcrypt.hash(password, 3);
     const sendObj = {
       firstName,
       lastName,

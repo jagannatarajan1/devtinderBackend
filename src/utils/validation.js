@@ -19,6 +19,21 @@ const validatorFunction = (req) => {
     return error.message;
   }
 };
+const validatePassword = (req) => {
+  const { password } = req.body;
+  try {
+    const validatePassword = validator.isStrongPassword(password);
+    if (!validatePassword) {
+      throw new Error(
+        "Password must be at least 8 characters long, contain a number, a lowercase letter, an uppercase letter, and a special character"
+      );
+    }
+    return validatePassword;
+  } catch (error) {
+    console.error(error.message);
+    return error.message;
+  }
+};
 
 const validateEdit = (req) => {
   try {
@@ -45,4 +60,4 @@ const validateEdit = (req) => {
   }
 };
 
-module.exports = { validatorFunction, validateEdit };
+module.exports = { validatorFunction, validateEdit, validatePassword };

@@ -18,5 +18,5 @@
 
 # profile
 
--get/profile
+-get/profile     
 -patch/profile
