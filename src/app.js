@@ -11,12 +11,14 @@ const app = express();
 const authRoute = require("./routes/authRoutes");
 const profileRoute = require("./routes/profileRoute.js");
 const requestRoute = require("./routes/requestRoute.js");
+const receiveRoute = require("./routes/receiveRoutes.js");
 
 app.use(cookieParser());
 app.use(express.json());
 app.use("/", authRoute);
 app.use("/", profileRoute);
 app.use("/", requestRoute);
+app.use("/", receiveRoute);
 const connectionFunction = async () => {
   try {
     await connectdb();

@@ -46,4 +46,36 @@ requestRoute.post("/request/:status/:userId", userAuth, async (req, res) => {
     res.status(500).send("server error" + err.message);
   }
 });
+
+requestRoute.post(
+  "/request/review/:status/:userId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const myUserId = req.user._id;
+      const otherPersonId = req.params.userId;
+      const status = req.params.status;
+      const validateStatus = ["accepted", "rejected"];
+      if (!validateStatus.includes(status)) {
+        return res.status(400).json({
+          message: "Invalid status",
+        });
+      }
+      const existingRequest = await ConnectionRequest.findOne({
+        fromUserId: otherPersonId,
+        toUserId: myUserId,
+        status: "interested",
+      });
+      if (!existingRequest) {
+        return res.status(404).json({ message: "No such request found" });
+      }
+      existingRequest.status = status;
+
+      await existingRequest.save();
+      res.json({ message: "Request updated successfully" });
+    } catch (err) {
+      res.status(500).send("Server error" + err.message);
+    }
+  }
+);
 module.exports = requestRoute;
