@@ -46,5 +46,27 @@ receiveRoute.get("/connections", userAuth, async (req, res) => {
     res.status(500).send(error.message);
   }
 });
+receiveRoute.get("/feed", userAuth, async (req, res) => {
+  try {
+    const user = req.user;
+    const userConnectionData = new Set();
+
+    const DataOfConnection = await ConnectionRequest.find({
+      $or: [{ toUserId: user._id }, { fromUserId: user._id }],
+    }).select("fromUserId toUserId");
+    console.log(DataOfConnection);
+
+    DataOfConnection.forEach((connection) => {
+      userConnectionData.add(connection.fromUserId.toString());
+      userConnectionData.add(connection.toUserId.toString());
+      console.log(DataOfConnection + "oneeeeee");
+    });
+    const setToArray = Array.from(userConnectionData);
+    // console.log(DataOfConnection);
+    res.json(setToArray);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
 
 module.exports = receiveRoute;
