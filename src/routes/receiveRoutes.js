@@ -2,6 +2,7 @@ const express = require("express");
 const receiveRoute = express.Router();
 const { userAuth } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequest");
+const User = require("../models/user");
 
 const userInfoData = ["firstName", "lastName", "age", "skills", "profilePic"];
 receiveRoute.get("/request/receive", userAuth, async (req, res) => {
@@ -48,22 +49,31 @@ receiveRoute.get("/connections", userAuth, async (req, res) => {
 });
 receiveRoute.get("/feed", userAuth, async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+
+    let limit = parseInt(req.query.limit);
+    limit = limit > 50 ? 50 : limit;
+    const skip = (page - 1) * limit;
     const user = req.user;
     const userConnectionData = new Set();
 
     const DataOfConnection = await ConnectionRequest.find({
       $or: [{ toUserId: user._id }, { fromUserId: user._id }],
     }).select("fromUserId toUserId");
-    console.log(DataOfConnection);
 
     DataOfConnection.forEach((connection) => {
       userConnectionData.add(connection.fromUserId.toString());
       userConnectionData.add(connection.toUserId.toString());
-      console.log(DataOfConnection + "oneeeeee");
     });
     const setToArray = Array.from(userConnectionData);
+    const filteredData = await User.find({
+      $and: [{ _id: { $nin: setToArray } }, { _id: { $ne: user._id } }],
+    })
+      .skip(skip)
+      .limit(limit);
+    console.log(filteredData);
     // console.log(DataOfConnection);
-    res.json(setToArray);
+    res.json(filteredData);
   } catch (error) {
     res.status(500).send(error.message);
   }
