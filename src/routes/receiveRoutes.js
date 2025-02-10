@@ -5,7 +5,8 @@ const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
 
 const userInfoData = ["firstName", "lastName", "age", "skills", "profilePic"];
-receiveRoute.get("/request/receive", userAuth, async (req, res) => {
+receiveRoute.get("/request/receive", userAuth, async (req, res) =>
+{
   try {
     const user = req.user;
     console.log(`Received connection`);
@@ -22,7 +23,8 @@ receiveRoute.get("/request/receive", userAuth, async (req, res) => {
   } catch (error) {
     console.error(error.message);
   }
-});
+}
+);
 receiveRoute.get("/connections", userAuth, async (req, res) => {
   try {
     const user = req.user;
@@ -50,13 +52,12 @@ receiveRoute.get("/connections", userAuth, async (req, res) => {
 receiveRoute.get("/feed", userAuth, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-
     let limit = parseInt(req.query.limit);
+
     limit = limit > 50 ? 50 : limit;
     const skip = (page - 1) * limit;
     const user = req.user;
     const userConnectionData = new Set();
-
     const DataOfConnection = await ConnectionRequest.find({
       $or: [{ toUserId: user._id }, { fromUserId: user._id }],
     }).select("fromUserId toUserId");

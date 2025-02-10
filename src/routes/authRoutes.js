@@ -50,7 +50,7 @@ authRoute.post("/login", async (req, res) => {
         expires: new Date(Date.now() + 900000),
         httpOnly: true,
       });
-      res.send("login successfully");
+      res.send("login successfully" + user);
     }
   } catch (error) {
     console.error(error.message);

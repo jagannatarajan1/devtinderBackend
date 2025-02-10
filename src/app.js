@@ -12,7 +12,14 @@ const authRoute = require("./routes/authRoutes");
 const profileRoute = require("./routes/profileRoute.js");
 const requestRoute = require("./routes/requestRoute.js");
 const receiveRoute = require("./routes/receiveRoutes.js");
+const cors = require("cors");
 
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 app.use(express.json());
 app.use("/", authRoute);
