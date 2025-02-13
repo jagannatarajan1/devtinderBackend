@@ -65,11 +65,26 @@ const userModel = new mongoose.Schema(
         },
       },
     },
+    gender: {
+      type: String,
+      enum: {
+        values: ["male", "female", "other"],
+        message: `{VALUE} is not supported`,
+      },
+      required: true,
+    },
     skills: {
       type: [String],
       // required: true,
       minlength: 2,
       maxlength: 10,
+    },
+    about: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 10,
+      maxlength: 100,
     },
   },
   {

@@ -1,9 +1,17 @@
 const validator = require("validator");
 const validatorFunction = (req) => {
-  const { firstName, lastName, emailId, password } = req.body;
+  const { firstName, lastName, emailId, password, age, gender } = req.body;
   try {
     if (!firstName || !lastName) {
       throw new Error("First name and last name are required");
+    }
+    const isValidAge = validator.isInt(age, { min: 18, max: 99 });
+    if (!isValidAge) {
+      throw new Error("Age must be between 18 and 99");
+    }
+    const genderOptions = ["male", "female", "other"];
+    if (!genderOptions.includes(gender)) {
+      throw new Error("Please select a valid gender");
     }
     const validateEmailId = validator.isEmail(emailId);
     if (!validateEmailId) {

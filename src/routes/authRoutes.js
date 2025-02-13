@@ -11,15 +11,28 @@ authRoute.post("/signup", async (req, res) => {
     validatorFunction(req);
     console.log(req.body);
 
-    const { firstName, lastName, emailId, password } = req.body;
+    const {
+      firstName,
+      lastName,
+      emailId,
+      password,
+      about,
+      profilePic,
+      age,
+      gender,
+      skills,
+    } = req.body;
     const passwordHash = await bcrypt.hash(password, 3);
     const sendObj = {
       firstName,
       lastName,
       emailId,
       password: passwordHash,
-      // skills: [],
-      // profilePic: "",
+      skills,
+      profilePic,
+      about,
+      gender,
+      age,
     };
     const user = new User(sendObj);
     await user.save();
@@ -50,7 +63,7 @@ authRoute.post("/login", async (req, res) => {
         expires: new Date(Date.now() + 900000),
         httpOnly: true,
       });
-      res.send("login successfully" + user);
+      res.send(user);
     }
   } catch (error) {
     console.error(error.message);

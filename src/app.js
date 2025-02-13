@@ -14,12 +14,17 @@ const requestRoute = require("./routes/requestRoute.js");
 const receiveRoute = require("./routes/receiveRoutes.js");
 const cors = require("cors");
 
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: "http://localhost:5173", // Allow frontend
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], // Allow PATCH
+  allowedHeaders: ["Content-Type", "Authorization"], // Allow headers
+  credentials: true, // Allow cookies if needed
+};
+
+app.use(cors(corsOptions));
+
+// Required for handling preflight requests properly
+app.options("*", cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 app.use("/", authRoute);

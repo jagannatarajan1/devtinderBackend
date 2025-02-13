@@ -4,9 +4,17 @@ const { userAuth } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
 
-const userInfoData = ["firstName", "lastName", "age", "skills", "profilePic"];
-receiveRoute.get("/request/receive", userAuth, async (req, res) =>
-{
+const userInfoData = [
+  "firstName",
+  "lastName",
+  "age",
+  "skills",
+  "profilePic",
+  "gender",
+  "about",
+];
+
+receiveRoute.get("/request/receive", userAuth, async (req, res) => {
   try {
     const user = req.user;
     console.log(`Received connection`);
@@ -22,9 +30,9 @@ receiveRoute.get("/request/receive", userAuth, async (req, res) =>
     res.json(connnectionRequest);
   } catch (error) {
     console.error(error.message);
+    res.status(500).send(error.message);
   }
-}
-);
+});
 receiveRoute.get("/connections", userAuth, async (req, res) => {
   try {
     const user = req.user;

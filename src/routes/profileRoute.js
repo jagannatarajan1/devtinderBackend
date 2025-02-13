@@ -14,7 +14,7 @@ profileRoute.get("/profile/view", userAuth, async (req, res) => {
   }
 });
 
-profileRoute.patch("/profile/edit", userAuth, async (req, res) => {
+profileRoute.put("/profile/edit", userAuth, async (req, res) => {
   try {
     const user = req.user;
 
