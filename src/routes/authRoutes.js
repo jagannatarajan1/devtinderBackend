@@ -29,9 +29,11 @@ authRoute.post("/signup", async (req, res) => {
       emailId,
       password: passwordHash,
       skills,
-      profilePic,
+      profilePic:
+        profilePic ||
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaqiwrtc2R9MuIS83171xsgtTt81GddweP-g&s",
       about,
-      gender,
+      gender: gender || "male",
       age,
     };
     const user = new User(sendObj);
@@ -40,7 +42,7 @@ authRoute.post("/signup", async (req, res) => {
     res.send(user);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server Error" + error.message);
+    res.status(500).send(error.message);
   }
 });
 authRoute.post("/login", async (req, res) => {

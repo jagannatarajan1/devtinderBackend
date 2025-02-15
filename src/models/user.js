@@ -81,7 +81,7 @@ const userModel = new mongoose.Schema(
     },
     about: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
       minlength: 10,
       maxlength: 100,
