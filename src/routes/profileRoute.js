@@ -24,9 +24,9 @@ profileRoute.put("/profile/edit", userAuth, async (req, res) => {
     }
     const editingItem = req.body;
     Object.keys(editingItem).forEach((key) => (user[key] = editingItem[key]));
-    console.log(editingItem);
-    console.log(user);
-    console.log(isValid);
+    // console.log(editingItem);
+    // console.log(user);
+    // console.log(isValid);
     await user.save();
 
     res.send(user.firstName + "  updated Successfully");
@@ -44,10 +44,8 @@ profileRoute.patch("/profile/forgotPassword", userAuth, async (req, res) => {
     const user = req.user;
     const newPassword = req.body.password;
     const passwordHash = await bcrypt.hash(newPassword, 3);
-    console.log(passwordHash);
     user.password = passwordHash;
     await user.save();
-    console.log(user);
     res.send(user.firstName + "Password updated Successfully");
   } catch (error) {
     console.log(error.message);
