@@ -15,7 +15,7 @@ const receiveRoute = require("./routes/receiveRoutes.js");
 const cors = require("cors");
 
 const corsOptions = {
-  origin: "https://devtinder-qycn.onrender.com", // Allow frontend
+  origin: "http://localhost:5173", // Allow frontend
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], // Allow PATCH
   allowedHeaders: ["Content-Type", "Authorization"], // Allow headers
   credentials: true, // Allow cookies if needed
