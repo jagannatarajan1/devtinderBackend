@@ -8,6 +8,7 @@ const requestRoute = require("./routes/requestRoute.js");
 const receiveRoute = require("./routes/receiveRoutes.js");
 const cors = require("cors");
 const path = require("path");
+require("dotenv").config();
 
 const corsOptions = {
   origin: "http://localhost:5173", // Allow frontend
@@ -36,8 +37,8 @@ const connectionFunction = async () => {
     await connectdb();
     console.log("MongoDB Connected");
 
-    app.listen(4000, () => {
-      console.log("Server is running on port 4000");
+    app.listen(process.env.PORT, () => {
+      console.log("Server is running ");
     });
   } catch (err) {
     console.error(err.message);

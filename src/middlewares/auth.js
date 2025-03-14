@@ -8,7 +8,7 @@ const userAuth = async (req, res, next) => {
     }
 
     // Verify the token
-    const decoded = await jwt.verify(token, "GhostGopal@123");
+    const decoded = await jwt.verify(token, process.env.ENCRYPT_KEY);
     if (!decoded) {
       throw new Error("Invalid token");
     }
