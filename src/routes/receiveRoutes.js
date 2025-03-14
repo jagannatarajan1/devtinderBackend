@@ -81,7 +81,6 @@ receiveRoute.get("/feed", userAuth, async (req, res) => {
       .skip(skip)
       .limit(limit);
     console.log(filteredData);
-    // console.log(DataOfConnection);
     res.json(filteredData);
   } catch (error) {
     res.status(500).send(error.message);
