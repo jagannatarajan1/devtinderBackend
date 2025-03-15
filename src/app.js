@@ -9,6 +9,7 @@ const receiveRoute = require("./routes/receiveRoutes.js");
 const cors = require("cors");
 const path = require("path");
 require("dotenv").config();
+require('./utils/cronjob.js')
 
 const corsOptions = {
   origin: "http://localhost:5173", // Allow frontend

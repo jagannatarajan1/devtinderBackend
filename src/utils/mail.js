@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
-const sendMail = async () => {
+const sendMail = async (receiveBody) => {
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -21,7 +21,7 @@ const sendMail = async () => {
       },
       to: ["gametechjagan@gmail.com"],
       subject: "A new Request has come",
-      text: "A New Connection Received!",
+      text: receiveBody,
       // html: "<b>Hello world?</b>",
     };
 
