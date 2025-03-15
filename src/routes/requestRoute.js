@@ -3,6 +3,7 @@ const requestRoute = express.Router();
 const { userAuth } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
+const sendMail = require("../utils/mail");
 // Importing the model
 requestRoute.post("/request/:status/:userId", userAuth, async (req, res) => {
   try {
@@ -38,8 +39,10 @@ requestRoute.post("/request/:status/:userId", userAuth, async (req, res) => {
       toUserId,
       status,
     });
+
     console.log(newRequest);
     await newRequest.save();
+    await sendMail( );
     res.json({ status: status, toUserId: toUserId, fromUserId: fromUserId });
   } catch (err) {
     console.error(err.message);
