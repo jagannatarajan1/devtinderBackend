@@ -8,8 +8,9 @@ const requestRoute = require("./routes/requestRoute.js");
 const receiveRoute = require("./routes/receiveRoutes.js");
 const cors = require("cors");
 const path = require("path");
+const paymentRoutes = require("./routes/paymentRoutes.js");
 require("dotenv").config();
-require('./utils/cronjob.js')
+require("./utils/cronjob.js");
 
 const corsOptions = {
   origin: "http://localhost:5173", // Allow frontend
@@ -28,6 +29,7 @@ app.use("/", authRoute);
 app.use("/", profileRoute);
 app.use("/", requestRoute);
 app.use("/", receiveRoute);
+app.use("/", paymentRoutes);
 app.use(express.static(path.join(__dirname, "../client/dist")));
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
