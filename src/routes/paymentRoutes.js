@@ -7,14 +7,17 @@ const paymentSchema = require("../models/payment");
 paymentRoutes.post("/payment/create", userAuth, async (req, res) => {
   try {
     // Create the Razorpay order
+    const { price, type } = req.body;
+    const { firstName, lastName, email } = req.user;
+    const razorpayKey = process.env.key_id;
     const payment = await razorpayInstance.orders.create({
-      amount: 1000, // Amount in paise
+      amount: price, // Amount in paise
       currency: "INR",
       receipt: "receipt#1",
       notes: {
-        firstName: "firstName",
-        lastName: "lastName",
-        membership: "gold",
+        firstName,
+        lastName,
+        membership: type,
       },
     });
 
@@ -38,7 +41,11 @@ paymentRoutes.post("/payment/create", userAuth, async (req, res) => {
     console.log("New payment saved:", newPayment);
 
     // Send the response to the client after saving
-    res.status(201).json({ message: "Payment created successfully", payment });
+    res.status(201).json({
+      message: "Payment created successfully",
+      newPayment,
+      razorpayKey,
+    });
   } catch (err) {
     console.error("Error creating payment:", err);
     res.status(500).json({ error: "Failed to create payment" });
