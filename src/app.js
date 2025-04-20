@@ -7,16 +7,18 @@ const profileRoute = require("./routes/profileRoute.js");
 const requestRoute = require("./routes/requestRoute.js");
 const receiveRoute = require("./routes/receiveRoutes.js");
 const cors = require("cors");
-const path = require("path");
 const paymentRoutes = require("./routes/paymentRoutes.js");
 require("dotenv").config();
 require("./utils/cronjob.js");
 
 const corsOptions = {
-  origin: "http://localhost:5173", // Allow frontend
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], // Allow PATCH
-  allowedHeaders: ["Content-Type", "Authorization"], // Allow headers
-  credentials: true, // Allow cookies if needed
+  origin: [
+    "http://localhost:5173", // local dev
+    "https://devtinder-8uuz.onrender.com", // deployed frontend (replace with real URL)
+  ],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -30,10 +32,10 @@ app.use("/", profileRoute);
 app.use("/", requestRoute);
 app.use("/", receiveRoute);
 app.use("/", paymentRoutes);
-app.use(express.static(path.join(__dirname, "../client/dist")));
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
-});
+// app.use(express.static(path.join(__dirname, "../client/dist")));
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+// });
 
 const connectionFunction = async () => {
   try {

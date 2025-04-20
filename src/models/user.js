@@ -65,6 +65,18 @@ const userModel = new mongoose.Schema(
         },
       },
     },
+    isPremium: {
+      type: Boolean,
+      default: false,
+    },
+    membershipType: {
+      type: String,
+      enum: {
+        values: ["Silver", "Gold", "Platinum"],
+        message: `{VALUE} is not supported`,
+      },
+      default: "basic",
+    },
     gender: {
       type: String,
       enum: {
