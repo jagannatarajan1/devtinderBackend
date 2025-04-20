@@ -62,8 +62,10 @@ authRoute.post("/login", async (req, res) => {
       const token = await user.JwtToken();
 
       res.cookie("token", token, {
-        expires: new Date(Date.now() + 900000),
-        httpOnly: true,
+        httpOnly: true, // Prevent client-side access to the cookie
+        sameSite: "None", // Crucial for cross-origin cookies
+        secure: true, // Must be true for production (HTTPS)
+        maxAge: 3600000, // Optional: Set expiration time for the cookie
       });
       res.send(user);
     }
