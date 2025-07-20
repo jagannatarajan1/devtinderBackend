@@ -2,6 +2,7 @@ const validator = require("validator");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+
 const userModel = new mongoose.Schema(
   {
     firstName: {
@@ -72,7 +73,7 @@ const userModel = new mongoose.Schema(
     membershipType: {
       type: String,
       enum: {
-        values: ["Silver", "Gold", "Platinum"],
+        values: ["basic", "premium"],
         message: `{VALUE} is not supported`,
       },
       default: "basic",
@@ -107,7 +108,8 @@ userModel.methods.JwtToken = async function () {
   const user = this;
   console.log(user);
   const token = jwt.sign({ id: user._id }, "GhostGopal@123", {
-    expiresIn: "1d", // expires in 24 hours
+    // expiresIn: "1d", // expires in 24 hours
+    expiresIn: "7d",
   });
   return token;
 };

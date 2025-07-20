@@ -48,6 +48,7 @@ authRoute.post("/signup", async (req, res) => {
 authRoute.post("/login", async (req, res) => {
   try {
     const { emailId, password } = req.body;
+    console.log(req.body);
     if (!validator.isEmail(emailId)) {
       throw new Error("Invalid credentials");
     }
@@ -62,12 +63,16 @@ authRoute.post("/login", async (req, res) => {
       const token = await user.JwtToken();
 
       res.cookie("token", token, {
-        httpOnly: true, // Prevent client-side access to the cookie
-        sameSite: "None", // Crucial for cross-origin cookies
-        secure: true, // Must be true for production (HTTPS)
-        maxAge: 3600000, // Optional: Set expiration time for the cookie
+        httpOnly: true,
+        secure: true, // ✅ Needed for HTTPS (Ngrok)
+        sameSite: "None", // ✅ Required for cross-origin cookies
+        maxAge: 7 * 24 * 60 * 60 * 1000, // e.g., 7 days
       });
-      res.send(user);
+
+      res.status(200).json({
+        message: "Login successful",
+        user,
+      });
     }
   } catch (error) {
     console.error(error.message);

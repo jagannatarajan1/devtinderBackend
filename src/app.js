@@ -13,12 +13,13 @@ require("./utils/cronjob.js");
 
 const corsOptions = {
   origin: [
-    "http://localhost:5173", // local dev
-    "https://devtinder-8uuz.onrender.com", // deployed frontend (replace with real URL)
+    "http://localhost:5173",
+    "https://devtinder-8uuz.onrender.com",
+    "https://key-accurate-sheepdog.ngrok-free.app", // ✅ Add this
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, // Allow cookies to be sent
+  credentials: true,
 };
 
 app.use(cors(corsOptions));

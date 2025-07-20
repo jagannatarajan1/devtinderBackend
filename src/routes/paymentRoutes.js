@@ -10,11 +10,11 @@ const { findOne } = require("../models/user");
 paymentRoutes.post("/payment/create", userAuth, async (req, res) => {
   try {
     // Create the Razorpay order
-    const { price, type } = req.body;
+    const { type } = req.body;
     const { firstName, lastName, email } = req.user;
     const razorpayKey = process.env.key_id;
     const payment = await razorpayInstance.orders.create({
-      amount: price, // Amount in paise
+      amount: 4990, // Amount in paise
       currency: "INR",
       receipt: "receipt#1",
       notes: {
