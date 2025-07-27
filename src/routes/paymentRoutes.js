@@ -68,7 +68,7 @@ paymentRoutes.post("/payment/webhook", async (req, res) => {
       console.log("Invalid Webhook Signature");
       return res.status(400).json({ msg: "Webhook signature is invalid" });
     }
-
+    console.log("Webhook signature is valid");
     const paymentDetails = req.body.payload.payment.entity;
     // const paymentId = paymentDetails.id;
     const orderId = paymentDetails.order_id;

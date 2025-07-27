@@ -15,7 +15,7 @@ const corsOptions = {
   origin: [
     "http://localhost:5173",
     "https://devtinder-8uuz.onrender.com",
-    "https://key-accurate-sheepdog.ngrok-free.app", // ✅ Add this
+    "https://devtinderbackend-3v70.onrender.com", // ✅ Add this
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
