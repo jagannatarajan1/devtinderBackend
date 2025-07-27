@@ -99,6 +99,8 @@ const userModel = new mongoose.Schema(
       minlength: 10,
       maxlength: 100,
     },
+    isSubscribed: { type: Boolean, default: false },
+    subscriptionExpiresAt: { type: Date },
   },
   {
     timestamps: true,
