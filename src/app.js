@@ -7,6 +7,7 @@ const profileRoute = require("./routes/profileRoute.js");
 const requestRoute = require("./routes/requestRoute.js");
 const receiveRoute = require("./routes/receiveRoutes.js");
 const cors = require("cors");
+const http = require("http");
 const paymentRoutes = require("./routes/paymentRoutes.js");
 require("dotenv").config();
 require("./utils/cronjob.js");
@@ -37,6 +38,8 @@ app.use("/", paymentRoutes);
 // app.get("*", (req, res) => {
 //   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 // });
+
+const server = http.createServer(app);
 
 const connectionFunction = async () => {
   try {
