@@ -84,6 +84,7 @@ paymentRoutes.post("/payment/webhook", async (req, res) => {
       const user = await User.findById(paymentDb.userId);
       if (user) {
         user.isSubscribed = true;
+        user.membershipType = "premium";
         user.subscriptionExpiresAt = new Date(
           Date.now() + 30 * 24 * 60 * 60 * 1000
         );
