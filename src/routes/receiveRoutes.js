@@ -45,8 +45,8 @@ receiveRoute.get("/connections", userAuth, async (req, res) => {
       .populate("fromUserId", userInfoData)
       .populate("toUserId", userInfoData);
     const data = connections.map((row) => {
-      if (row.fromUserId._id === user._id) {
-        return toUserId;
+      if (row.fromUserId._id.toString() === user._id.toString()) {
+        return row.toUserId;
       }
       return row.fromUserId;
     });
@@ -66,8 +66,12 @@ receiveRoute.get("/feed", userAuth, async (req, res) => {
     const skip = (page - 1) * limit;
     const user = req.user;
     const userConnectionData = new Set();
+    // const DataOfConnection = await ConnectionRequest.find({
+    //   $or: [{ toUserId: user._id }, { fromUserId: user._id }],
+    // }).select("fromUserId toUserId");
     const DataOfConnection = await ConnectionRequest.find({
       $or: [{ toUserId: user._id }, { fromUserId: user._id }],
+      status: { $in: ["accepted", "rejected"] }, // ❌ only exclude these
     }).select("fromUserId toUserId");
 
     DataOfConnection.forEach((connection) => {

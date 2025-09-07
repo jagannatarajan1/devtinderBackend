@@ -10,30 +10,50 @@ requestRoute.post("/request/:status/:userId", userAuth, async (req, res) => {
     const status = req.params.status;
     const toUserId = req.params.userId;
     const fromUserId = req.user._id;
+
     console.log(req.user, fromUserId);
     console.log(status, toUserId, fromUserId);
 
-    // Check if the user exists
+    // ✅ Validate user existence
     const validateToId = await User.findById(toUserId);
     if (!validateToId) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    //chech the status
-    const validateStatus = ["interested", "ignored"];
-    if (!validateStatus.includes(status)) {
-      return res.status(400).send("invalid  status");
+    // ✅ Validate status
+    const validStatuses = ["interested", "ignored"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).send("Invalid status");
     }
-    const existingconnection = await ConnectionRequest.findOne({
-      $or: [
-        { fromUserId, toUserId },
-        { fromUserId: toUserId, toUserId: fromUserId },
-      ],
+
+    // ✅ Check if opposite user already sent an "interested" request
+    const existingOpposite = await ConnectionRequest.findOne({
+      fromUserId: toUserId,
+      toUserId: fromUserId,
+      status: "interested",
     });
-    if (existingconnection) {
+
+    if (existingOpposite && status === "interested") {
+      // 🔥 Mutual interest → make it a connection
+      existingOpposite.status = "accepted";
+      await existingOpposite.save();
+      return res.json({
+        message: "Connection established!",
+        connection: existingOpposite,
+      });
+    }
+
+    // ✅ Check if request already exists (any status)
+    const existingConnection = await ConnectionRequest.findOne({
+      fromUserId,
+      toUserId,
+    });
+
+    if (existingConnection) {
       return res.status(400).json({ message: "Request already exists" });
     }
 
+    // ✅ Create new request
     const newRequest = new ConnectionRequest({
       fromUserId,
       toUserId,
@@ -42,11 +62,19 @@ requestRoute.post("/request/:status/:userId", userAuth, async (req, res) => {
 
     console.log(newRequest);
     await newRequest.save();
-    await sendMail( );
-    res.json({ status: status, toUserId: toUserId, fromUserId: fromUserId });
+
+    // optional: send mail notification
+    await sendMail();
+
+    res.json({
+      message: "Request sent successfully",
+      status,
+      toUserId,
+      fromUserId,
+    });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("server error" + err.message);
+    res.status(500).send("Server error: " + err.message);
   }
 });
 

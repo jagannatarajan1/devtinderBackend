@@ -97,6 +97,7 @@ const userModel = new mongoose.Schema(
     },
     isSubscribed: { type: Boolean, default: false },
     subscriptionExpiresAt: { type: Date },
+    isVerified: { type: Boolean, default: false },
   },
   {
     timestamps: true,
