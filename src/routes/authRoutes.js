@@ -12,6 +12,7 @@ const crypto = require("crypto");
 authRoute.post("/signup", async (req, res) => {
   try {
     validatorFunction(req);
+
     const {
       firstName,
       lastName,
@@ -28,24 +29,25 @@ authRoute.post("/signup", async (req, res) => {
     if (existingUser)
       return res.status(400).send("User already exists with this email");
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    // Generate OTP
+    const otpCode = crypto.randomInt(100000, 999999).toString();
 
-    const user = new User({
-      firstName,
-      lastName,
+    // Store user data in OTP collection temporarily
+    await Otp.create({
       emailId,
-      password: passwordHash,
-      skills,
-      profilePic: profilePic || "https://placehold.co/100x100",
-      about,
-      gender: gender || "male",
-      age,
-      isVerified: false,
+      otp: otpCode,
+      userData: {
+        firstName,
+        lastName,
+        password,
+        about,
+        profilePic,
+        age,
+        gender,
+        skills,
+      },
     });
 
-    // create OTP
-    const otpCode = crypto.randomInt(100000, 999999).toString();
-    await Otp.create({ emailId, otp: otpCode });
     console.log(`OTP sent to ${emailId}: ${otpCode}`);
     await sendEmail(
       emailId,
@@ -56,9 +58,11 @@ authRoute.post("/signup", async (req, res) => {
     res.status(200).json({
       message: "OTP sent to email. Please verify to complete signup.",
     });
-    await user.save();
   } catch (error) {
-    res.status(500).send(error.message);
+    console.error(error);
+    if (!res.headersSent) {
+      res.status(500).send(error.message);
+    }
   }
 });
 
@@ -68,16 +72,46 @@ authRoute.post("/verify-otp", async (req, res) => {
     const { emailId, otp } = req.body;
 
     const record = await Otp.findOne({ emailId, otp });
-    if (!record) return res.status(400).send("Invalid or expired OTP");
+    if (!record)
+      return res.status(400).json({ message: "Invalid or expired OTP" });
 
-    await User.updateOne({ emailId }, { isVerified: true });
+    const userData = record.userData;
+    if (!userData)
+      return res
+        .status(400)
+        .json({ message: "User data not found for this OTP" });
+
+    // Hash the password before saving
+    const passwordHash = await bcrypt.hash(userData.password, 10);
+
+    const user = new User({
+      ...userData,
+      emailId,
+      password: passwordHash,
+      isVerified: true,
+      profilePic: userData.profilePic || "https://placehold.co/100x100",
+      gender: userData.gender || "male",
+    });
+
+    await user.save();
     await Otp.deleteMany({ emailId });
 
-    const user = await User.findOne({ emailId });
+    // Generate JWT token after signup verification
+    const token = await user.JwtToken();
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     res.status(200).json({ message: "Account verified successfully", user });
   } catch (error) {
-    res.status(500).send(error.message);
+    console.error(error);
+    if (!res.headersSent) {
+      res.status(500).send(error.message);
+    }
   }
 });
 
@@ -105,7 +139,9 @@ authRoute.post("/login", async (req, res) => {
 
     res.status(200).json({ message: "Login successful", user });
   } catch (error) {
-    res.status(500).send(error.message);
+    if (!res.headersSent) {
+      res.status(500).send(error.message);
+    }
   }
 });
 
@@ -117,15 +153,30 @@ authRoute.post("/resend-otp", async (req, res) => {
     if (!validator.isEmail(emailId))
       return res.status(400).send("Invalid email address");
 
-    const user = await User.findOne({ emailId });
-    if (!user) return res.status(400).send("No account found with this email");
-    if (user.isVerified)
+    // Check if there's an existing OTP record (temporary user data)
+    const otpRecord = await Otp.findOne({ emailId });
+    if (!otpRecord)
+      return res
+        .status(400)
+        .send("No signup attempt found with this email. Please signup first.");
+
+    // Check if user already exists in main collection (already verified)
+    const existingUser = await User.findOne({ emailId });
+    if (existingUser)
       return res.status(400).send("User already verified. Please login.");
 
+    // Delete previous OTPs
     await Otp.deleteMany({ emailId });
 
+    // Generate new OTP
     const otpCode = crypto.randomInt(100000, 999999).toString();
-    await Otp.create({ emailId, otp: otpCode });
+
+    // Save new OTP with the same temporary user data
+    await Otp.create({
+      emailId,
+      otp: otpCode,
+      userData: otpRecord.userData,
+    });
 
     await sendEmail(
       emailId,
@@ -135,7 +186,10 @@ authRoute.post("/resend-otp", async (req, res) => {
 
     res.status(200).json({ message: "New OTP sent successfully" });
   } catch (error) {
-    res.status(500).send("Failed to resend OTP");
+    console.error(error);
+    if (!res.headersSent) {
+      res.status(500).send("Failed to resend OTP");
+    }
   }
 });
 

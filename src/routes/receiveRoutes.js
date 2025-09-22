@@ -61,33 +61,36 @@ receiveRoute.get("/feed", userAuth, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     let limit = parseInt(req.query.limit);
-
     limit = limit > 50 ? 50 : limit;
+
     const skip = (page - 1) * limit;
     const user = req.user;
-    const userConnectionData = new Set();
-    // const DataOfConnection = await ConnectionRequest.find({
-    //   $or: [{ toUserId: user._id }, { fromUserId: user._id }],
-    // }).select("fromUserId toUserId");
+
+    // 🔥 Fetch all connections involving current user (any status)
     const DataOfConnection = await ConnectionRequest.find({
       $or: [{ toUserId: user._id }, { fromUserId: user._id }],
-      status: { $in: ["accepted", "rejected"] }, // ❌ only exclude these
     }).select("fromUserId toUserId");
 
+    // collect connected userIds
+    const userConnectionData = new Set();
     DataOfConnection.forEach((connection) => {
       userConnectionData.add(connection.fromUserId.toString());
       userConnectionData.add(connection.toUserId.toString());
     });
-    const setToArray = Array.from(userConnectionData);
+
+    // convert Set → Array
+    const excludedIds = Array.from(userConnectionData);
+
+    // 🔥 Fetch only users NOT in connections and not myself
     const filteredData = await User.find({
-      $and: [{ _id: { $nin: setToArray } }, { _id: { $ne: user._id } }],
+      _id: { $nin: [...excludedIds, user._id.toString()] },
     })
       .skip(skip)
       .limit(limit);
-    console.log(filteredData);
+
     res.json(filteredData);
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(500).send("Server error: " + error.message);
   }
 });
 
