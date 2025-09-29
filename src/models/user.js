@@ -9,14 +9,14 @@ const userModel = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      minlength: 3,
+      // minlength: 3,
       maxlength: 20,
     },
     lastName: {
       type: String,
       required: true,
       trim: true,
-      minlength: 3,
+      // minlength: 3,
       maxlength: 20,
     },
     emailId: {
@@ -85,14 +85,14 @@ const userModel = new mongoose.Schema(
     skills: {
       type: [String],
       // required: true,
-      minlength: 2,
+      // minlength: 2,
       maxlength: 10,
     },
     about: {
       type: String,
       // required: true,
       trim: true,
-      minlength: 10,
+      // minlength: 10,
       maxlength: 100,
     },
     isSubscribed: { type: Boolean, default: false },

@@ -92,6 +92,9 @@ requestRoute.post(
           message: "Invalid status",
         });
       }
+
+      console.log("my user id", myUserId);
+      console.log("otherperson id", otherPersonId);
       const existingRequest = await ConnectionRequest.findOne({
         fromUserId: otherPersonId,
         toUserId: myUserId,
